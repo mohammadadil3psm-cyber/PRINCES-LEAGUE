@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRINCES LEAGUE 👑 | الإحصائيات والمخطط الشامل</title>
+    <style>
+        :root {
+            --primary: #0b132b;
+            --secondary: #1c2541;
+            --gold: #d4af37;
+            --bg: #f4f6f8;
+            --danger: #e63946;
+            --success: #2a9d8f;
+            --info: #3a86ff;
+            --white: #ffffff;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--primary); margin: 0; color: #333; display: flex; flex-direction: column; min-height: 100vh; }
+        header { background: var(--secondary); color: var(--gold); text-align: center; padding: 15px; border-bottom: 3px solid var(--gold); }
+        header h1 { margin: 0; font-size: 2em; letter-spacing: 2px; }
+        
+        .main-container { flex: 1; padding: 20px; display: flex; justify-content: center; align-items: flex-start; }
+        .box { background: var(--bg); width: 100%; max-width: 1200px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; border-top: 5px solid var(--gold); margin-top: 20px; }
+        
+        .screen { display: none; padding: 25px; }
+        .screen.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-group { margin-bottom: 15px; text-align: right; }
+        .form-group label { display: block; font-weight: bold; color: var(--secondary); margin-bottom: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; box-sizing: border-box; }
+        
+        button { padding: 10px 15px; background: var(--gold); color: var(--primary); border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; font-size: 16px; margin-bottom: 10px; }
+        button:hover { filter: brightness(0.9); }
+        button.btn-danger { background: var(--danger); color: white; width: auto; font-size: 14px; margin-bottom:0; }
+        button.btn-success { background: var(--success); color: white; width: auto; font-size: 14px; margin-bottom:0; }
+        button.btn-info { background: var(--info); color: white; margin-top: 15px; }
+        
+        .stat-btn { background: var(--secondary); color: var(--white); padding: 5px 10px; font-size: 18px; border-radius: 50%; width: 35px; height: 35px; line-height: 1; margin: 0 5px; }
+        .stat-btn.add { background: var(--success); }
+        .stat-btn.sub { background: var(--danger); }
+
+        .link { text-align: center; display: block; margin-top: 15px; color: var(--secondary); cursor: pointer; text-decoration: underline; font-weight: bold; }
+        .alert { padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 15px; display: none; font-weight: bold; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; text-align: center; }
+        th, td { padding: 12px; border: 1px solid #ddd; }
+        th { background: var(--secondary); color: var(--gold); }
+        
+        .header-flex { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 20px; }
+        
+        .stats-cards { display: flex; justify-content: space-around; background: var(--primary); color: white; padding: 20px; border-radius: 10px; margin-top: 15px; flex-wrap: wrap; gap: 10px; }
+        .stat-card h3 { margin: 0; color: var(--gold); font-size: 2em; }
+
+        nav { background: var(--secondary); padding: 10px; text-align: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        nav button { background: transparent; color: white; width: auto; margin: 0; border: 1px solid transparent; }
+        nav button.active { border-bottom: 2px solid var(--gold); color: var(--gold); }
+
+        /* ستايل المخطط البراكيت */
+        .bracket-container { display: flex; justify-content: space-around; align-items: center; background: #e2e8f0; padding: 20px; border-radius: 8px; margin-top: 15px; overflow-x: auto; gap: 20px; }
+        .bracket-column { display: flex; flex-direction: column; justify-content: space-around; min-height: 300px; }
+        .match-box { background: white; border: 2px solid var(--secondary); border-radius: 6px; padding: 10px; width: 220px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .match-title { font-size: 12px; font-weight: bold; color: #666; text-align: center; border-bottom: 1px solid #ddd; padding-bottom: 3px; margin-bottom: 5px; }
+        .match-team { display: flex; justify-content: space-between; padding: 3px 0; font-size: 14px; }
+        .match-team.winner { font-weight: bold; color: var(--success); }
+        
+        .user-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--gold); margin-bottom: 10px; background: #ccc; }
+        .td-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; vertical-align: middle; margin-left: 8px; background: #ccc; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>PRINCES LEAGUE 👑</h1>
+        <p style="margin:5px 0 0 0; font-size:14px; color:#ccc;">الإحصائيات المباشرة ومخطط الإقصائيات</p>
+    </header>
+
+    <div class="main-container">
+        <div class="box">
+
+            <div id="auth-section">
+                <div id="login-screen" class="screen active">
+                    <h2 style="text-align: center; color: var(--primary);">تسجيل الدخول للمنظومة</h2>
+                    <div id="login-alert" class="alert"></div>
+                    <div class="form-group">
+                        <label>الاسم (أو اسم المنظم)</label>
+                        <input type="text" id="login-username" placeholder="أدخل اسمك">
+                    </div>
+                    <div class="form-group">
+                        <label>كلمة السر</label>
+                        <input type="password" id="login-password" placeholder="أدخل كلمة السر">
+                    </div>
+                    <button onclick="login()">دخول إلى النظام</button>
+                    <button class="btn-info" onclick="enterAsViewer()">👀 دخول الجماهير (متابعة الإحصائيات والمخطط)</button>
+                    <span class="link" onclick="toggleAuth('register')">لاعب أو مدرب جديد؟ أنشئ حساب</span>
+                </div>
+
+                <div id="register-screen" class="screen">
+                    <h2 style="text-align: center; color: var(--primary);">إنشاء حساب جديد</h2>
+                    <div id="reg-alert" class="alert"></div>
+                    <div class="form-group">
+                        <label>صفتك</label>
+                        <select id="reg-role" onchange="toggleCoachCode()">
+                            <option value="player">لاعب 🏃‍♂️</option>
+                            <option value="coach">مدير فني (مدرب) 👔</option>
+                        </select>
+                    </div>
+                    
+                    <!-- حقل كود المنظم المخفي (يظهر للمدربين فقط) -->
+                    <div class="form-group" id="coach-code-group" style="display: none; background: #eef2f5; padding: 10px; border-radius: 5px; border: 1px dashed var(--danger);">
+                        <label style="color: var(--danger);">كود دعوة المدربين السري 🔒</label>
+                        <input type="password" id="reg-coach-code" placeholder="أدخل كود المنظم للتسجيل كمدرب">
+                    </div>
+
+                    <div class="form-group">
+                        <label>الاسم</label>
+                        <input type="text" id="reg-name" placeholder="الاسم الثلاثي">
+                    </div>
+                    <div class="form-group">
+                        <label>الفريق</label>
+                        <select id="reg-team">
+                            <option value="فريق دايموند 💎">فريق دايموند 💎</option>
+                            <option value="فريق كلاون 🤡">فريق كلاون 🤡</option>
+                            <option value="الفريق الثالث 🐺">الفريق الثالث 🐺</option>
+                            <option value="الفريق الرابع 🦈">الفريق الرابع 🦈</option>
+                        </select>
+                    </div>
+                    
+                    <!-- تعديل رفع الصورة ليستخدم الكاميرا/المعرض -->
+                    <div class="form-group">
+                        <label>الصورة الشخصية (كاميرا أو معرض)</label>
+                        <input type="file" id="reg-avatar" accept="image/*" onchange="handleImageUpload(event, 'reg-preview')">
+                        <img id="reg-preview" src="" style="display:none; width:80px; height:80px; border-radius:50%; margin:10px auto; border:2px solid var(--gold); object-fit:cover;">
+                    </div>
+
+                    <div class="form-group">
+                        <label>كلمة السر</label>
+                        <input type="password" id="reg-password" placeholder="اختر كلمة سر">
+                    </div>
+                    <button onclick="register()">تأكيد وإنشاء</button>
+                    <span class="link" onclick="toggleAuth('login')">العودة لتسجيل الدخول</span>
+                </div>
+            </div>
+
+            <div id="dashboard-section" style="display: none;">
+                <nav id="top-nav"></nav>
+
+                <div id="viewer-view" class="screen">
+                    <div class="header-flex">
+                        <h2>مركز متابعة البطولة 📊</h2>
+                        <button class="btn-danger" onclick="logout()">عودة للرئيسية</button>
+                    </div>
+
+                    <h3>مخطط خروج المغلوب (مجموع الذهاب والإياب) 🏆</h3>
+                    <div class="bracket-container" id="viewer-bracket">
+                        </div>
+
+                    <hr style="margin: 30px 0; border: 1px dashed var(--gold);">
+
+                    <h3>استعراض الفرق واللاعبين 👥</h3>
+                    <div class="form-group">
+                        <label>اختر فريقاً لرؤية تفاصيله:</label>
+                        <select id="viewer-team-select" onchange="showTeamDetails(this.value)">
+                            <option value="">-- اختر فريقاً --</option>
+                            <option value="فريق دايموند 💎">فريق دايموند 💎</option>
+                            <option value="فريق كلاون 🤡">فريق كلاون 🤡</option>
+                            <option value="الفريق الثالث 🐺">الفريق الثالث 🐺</option>
+                            <option value="الفريق الرابع 🦈">الفريق الرابع 🦈</option>
+                        </select>
+                    </div>
+                    <div id="team-details-card" style="display:none; background:white; padding:15px; border-radius:8px; border:1px solid #ddd; margin-bottom:20px;">
+                        <h4 id="td-coach-name" style="margin:0 0 10px 0; color:var(--secondary);"></h4>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead><tr><th>الصورة</th><th>اللاعب</th><th>⚽ الأهداف</th><th>👟 أسيست</th></tr></thead>
+                                <tbody id="team-players-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <hr style="margin: 30px 0; border: 1px dashed var(--gold);">
+
+                    <h3>قائمة هدافي البطولة 🔥</h3>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead><tr><th>المركز</th><th>الصورة</th><th>اللاعب</th><th>الفريق</th><th>⚽ الأهداف</th><th>👟 أسيست</th></tr></thead>
+                            <tbody id="viewer-stats-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="player-view" class="screen">
+                    <div class="header-flex">
+                        <h2>مرحباً يا بطل ⚽</h2>
+                        <button class="btn-danger" onclick="logout()">خروج</button>
+                    </div>
+                    <div style="text-align:center; padding:20px; border:2px solid var(--gold); border-radius:10px; background:white;">
+                        <img id="p-avatar-img" src="" class="user-avatar" alt="الصورة الشخصية"><br>
+                        <h1 id="p-name" style="color:var(--primary); margin:0;"></h1>
+                        <h3 id="p-team" style="color:#666;"></h3>
+                        <div class="stats-cards">
+                            <div class="stat-card">
+                                <h3><span id="p-goals">0</span> ⚽</h3>
+                                <p>أهدافي</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3><span id="p-assists">0</span> 👟</h3>
+                                <p>صناعة لعب (أسيست)</p>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top:20px; max-width:400px; margin-left:auto; margin-right:auto;">
+                            <label>تحديث صورتك الشخصية (كاميرا أو معرض):</label>
+                            <input type="file" id="p-new-avatar" accept="image/*" onchange="handleProfileImageUpload(event, 'player')">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="coach-view" class="screen">
+                    <div class="header-flex">
+                        <h2>إدارة الفريق 👔</h2>
+                        <button class="btn-danger" onclick="logout()">خروج</button>
+                    </div>
+                    <div style="text-align:center; padding:15px; background:white; border-radius:10px; margin-bottom:20px;">
+                        <img id="c-avatar-img" src="" class="user-avatar" alt="صورة المدرب">
+                        <h3 id="c-team-title" style="color:var(--primary); margin:5px 0;"></h3>
+                    </div>
+                    <table>
+                        <thead><tr><th>الصورة</th><th>اللاعب</th><th>أهداف</th><th>أسيست</th><th>القرار الإداري</th></tr></thead>
+                        <tbody id="coach-players-list"></tbody>
+                    </table>
+                    <div class="form-group" style="margin-top:20px; max-width:400px;">
+                        <label>تحديث صورتك الشخصية (كاميرا أو معرض):</label>
+                        <input type="file" id="c-new-avatar" accept="image/*" onchange="handleProfileImageUpload(event, 'coach')">
+                    </div>
+                </div>
+
+                <div id="admin-view" class="screen">
+                    <div class="header-flex">
+                        <h2>مركز قيادة البطولة (ناجح حمادي) 💼</h2>
+                        <button class="btn-danger" onclick="logout()">خروج</button>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap:wrap;">
+                        <button onclick="switchAdminTab('stats')" style="background:var(--success); width:auto;">إدخل الإحصائيات 📈</button>
+                        <button onclick="switchAdminTab('bracket')" style="background:var(--info); width:auto;">إدارة المخطط (Bracket) 🏆</button>
+                        <button onclick="switchAdminTab('players')" style="width:auto;">بيانات المستخدمين</button>
+                    </div>
+
+                    <div id="admin-stats-tab">
+                        <h3 style="color:var(--primary);">تحديث إحصائيات اللاعبين</h3>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead><tr><th>اللاعب</th><th>الفريق</th><th>تسجيل هدف ⚽</th><th>صناعة هدف 👟</th></tr></thead>
+                                <tbody id="admin-stats-update"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="admin-bracket-tab" style="display:none; background:white; padding:20px; border-radius:8px;">
+                        <h3>إعداد وإدخال مخطط مباريات الإقصائيات (تجميع تلقائي)</h3>
+                        <p style="font-size:13px; color:#666;">أدخل أهداف كل فريق في الذهاب والعودة، وسيقوم النظام بجمعها تلقائياً.</p>
+                        
+                        <h4 style="color:var(--info);">— نصف النهائي الأول —</h4>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <input type="text" id="b-m1-t1" placeholder="الفريق الأول">
+                            <input type="text" id="b-m1-t2" placeholder="الفريق الثاني">
+                            
+                            <input type="number" id="b-m1-t1-l1" placeholder="أهداف فريق 1 (ذهاب)" oninput="calcAdminMatch('m1')">
+                            <input type="number" id="b-m1-t2-l1" placeholder="أهداف فريق 2 (ذهاب)" oninput="calcAdminMatch('m1')">
+                            
+                            <input type="number" id="b-m1-t1-l2" placeholder="أهداف فريق 1 (عودة)" oninput="calcAdminMatch('m1')">
+                            <input type="number" id="b-m1-t2-l2" placeholder="أهداف فريق 2 (عودة)" oninput="calcAdminMatch('m1')">
+                        </div>
+                        <div id="b-m1-total" style="text-align:center; font-weight:bold; margin-top:10px; color:var(--success);">النتيجة الإجمالية: 0 - 0</div>
+
+                        <hr style="margin: 15px 0;">
+
+                        <h4 style="color:var(--info);">— نصف النهائي الثاني —</h4>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <input type="text" id="b-m2-t1" placeholder="الفريق الثالث">
+                            <input type="text" id="b-m2-t2" placeholder="الفريق الرابع">
+                            
+                            <input type="number" id="b-m2-t1-l1" placeholder="أهداف فريق 3 (ذهاب)" oninput="calcAdminMatch('m2')">
+                            <input type="number" id="b-m2-t2-l1" placeholder="أهداف فريق 4 (ذهاب)" oninput="calcAdminMatch('m2')">
+                            
+                            <input type="number" id="b-m2-t1-l2" placeholder="أهداف فريق 3 (عودة)" oninput="calcAdminMatch('m2')">
+                            <input type="number" id="b-m2-t2-l2" placeholder="أهداف فريق 4 (عودة)" oninput="calcAdminMatch('m2')">
+                        </div>
+                        <div id="b-m2-total" style="text-align:center; font-weight:bold; margin-top:10px; color:var(--success);">النتيجة الإجمالية: 0 - 0</div>
+
+                        <hr style="margin: 15px 0;">
+
+                        <h4 style="color:var(--gold);">— النهائي الكبير 👑 —</h4>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                            <input type="text" id="b-m3-t1" placeholder="المتأهل الأول">
+                            <input type="text" id="b-m3-t2" placeholder="المتأهل الثاني">
+                            
+                            <input type="number" id="b-m3-t1-l1" placeholder="أهداف المتأهل 1 (ذهاب)" oninput="calcAdminMatch('m3')">
+                            <input type="number" id="b-m3-t2-l1" placeholder="أهداف المتأهل 2 (ذهاب)" oninput="calcAdminMatch('m3')">
+                            
+                            <input type="number" id="b-m3-t1-l2" placeholder="أهداف المتأهل 1 (عودة)" oninput="calcAdminMatch('m3')">
+                            <input type="number" id="b-m3-t2-l2" placeholder="أهداف المتأهل 2 (عودة)" oninput="calcAdminMatch('m3')">
+                        </div>
+                        <div id="b-m3-total" style="text-align:center; font-weight:bold; margin-top:10px; color:var(--gold);">النتيجة الإجمالية: 0 - 0</div>
+                        
+                        <br>
+                        <button onclick="saveBracketData()" style="background:var(--secondary); color:white;">حفظ وتحديث المخطط فوراً</button>
+                    </div>
+
+                    <div id="admin-players-tab" style="display:none;">
+                        <button class="btn-danger" onclick="clearDB()" style="margin-bottom:10px;">مسح كل بيانات السيستم ⚠️</button>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead><tr><th>الصفة</th><th>الاسم</th><th>الفريق</th><th>كلمة السر</th></tr></thead>
+                                <tbody id="admin-all-users"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div> </div>
+    </div>
+
+    <script>
+        // تحميل البيانات من المتصفح
+        let users = JSON.parse(localStorage.getItem('pl_users')) || [];
+        
+        // تعديل كائن المخطط ليحفظ تفاصيل الذهاب والعودة
+        let bracketData = JSON.parse(localStorage.getItem('pl_bracket')) || {
+            m1: {t1: 'فريق دايموند 💎', t2: 'فريق كلاون 🤡', r1: 0, r2: 0, t1_l1: '', t2_l1: '', t1_l2: '', t2_l2: ''},
+            m2: {t1: 'الفريق الثالث 🐺', t2: 'الفريق الرابع 🦈', r1: 0, r2: 0, t1_l1: '', t2_l1: '', t1_l2: '', t2_l2: ''},
+            m3: {t1: 'انتظار المتأهل', t2: 'انتظار المتأهل', r1: 0, r2: 0, t1_l1: '', t2_l1: '', t1_l2: '', t2_l2: ''}
+        };
+        
+        users.forEach(u => {
+            if(u.role === 'player') {
+                u.goals = u.goals || 0;
+                u.assists = u.assists || 0;
+            }
+            u.avatar = u.avatar || '';
+        });
+
+        let currentUser = null;
+        let tempBase64Image = ""; // متغير لحفظ الصورة مؤقتاً
+        const ADMIN_USER = "ناجح حمادي";
+        const ADMIN_PASS = "65810546";
+
+        function showAlert(id, msg, isError = true) {
+            const el = document.getElementById(id);
+            el.textContent = msg; el.style.display = 'block';
+            el.style.background = isError ? '#f8d7da' : '#d4edda';
+            el.style.color = isError ? '#721c24' : '#155724';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+
+        function toggleAuth(type) {
+            document.getElementById('login-screen').classList.remove('active');
+            document.getElementById('register-screen').classList.remove('active');
+            document.getElementById(type + '-screen').classList.add('active');
+            tempBase64Image = ""; // تصفير الصورة عند تبديل الشاشات
+        }
+
+        function switchScreen(id) {
+            document.querySelectorAll('#dashboard-section .screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        // إظهار/إخفاء كود المدرب
+        function toggleCoachCode() {
+            const role = document.getElementById('reg-role').value;
+            const codeGroup = document.getElementById('coach-code-group');
+            if (role === 'coach') {
+                codeGroup.style.display = 'block';
+            } else {
+                codeGroup.style.display = 'none';
+            }
+        }
+
+        // تحويل الصورة لمعرض/كاميرا إلى Base64
+        function handleImageUpload(event, previewId) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    tempBase64Image = e.target.result;
+                    if(previewId) {
+                        const preview = document.getElementById(previewId);
+                        preview.src = tempBase64Image;
+                        preview.style.display = 'block';
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function register() {
+            const role = document.getElementById('reg-role').value;
+            const name = document.getElementById('reg-name').value.trim();
+            const team = document.getElementById('reg-team').value;
+            const avatar = tempBase64Image; // أخذ الصورة المحولة
+            const pass = document.getElementById('reg-password').value.trim();
+
+            if(!name || !pass) return showAlert('reg-alert', 'أكمل كل البيانات!');
+            
+            // التحقق من كود المدرب
+            if(role === 'coach') {
+                const coachCode = document.getElementById('reg-coach-code').value.trim();
+                // الكود السري المخصص للمدربين
+                if(coachCode !== 'DIAMOND-KUWAIT') {
+                    return showAlert('reg-alert', 'كود دعوة المدربين غير صحيح!');
+                }
+            }
+
+            if(users.find(u => u.name === name)) return showAlert('reg-alert', 'الاسم مسجل مسبقاً!');
+            if(name === ADMIN_USER) return showAlert('reg-alert', 'لا يمكن استخدام اسم المنظم!');
+
+            let newUser = { role, name, team, avatar, pass };
+            if(role === 'player') {
+                newUser.goals = 0; newUser.assists = 0;
+            }
+            
+            users.push(newUser);
+            localStorage.setItem('pl_users', JSON.stringify(users));
+            
+            showAlert('reg-alert', 'تم التسجيل بنجاح!', false);
+            setTimeout(() => toggleAuth('login'), 1500);
+        }
+
+        function login() {
+            const name = document.getElementById('login-username').value.trim();
+            const pass = document.getElementById('login-password').value.trim();
+
+            if(!name || !pass) return showAlert('login-alert', 'أدخل البيانات!');
+
+            if(name === ADMIN_USER && pass === ADMIN_PASS) {
+                currentUser = { role: 'admin', name: ADMIN_USER };
+                initDashboard();
+                return;
+            }
+
+            const user = users.find(u => u.name === name && u.pass === pass);
+            if(user) { currentUser = user; initDashboard(); } 
+            else { showAlert('login-alert', 'الاسم أو كلمة السر خطأ!'); }
+        }
+
+        function enterAsViewer() {
+            currentUser = { role: 'viewer', name: 'جمهور' };
+            initDashboard();
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('dashboard-section').style.display = 'none';
+            document.getElementById('auth-section').style.display = 'block';
+            document.getElementById('login-username').value = '';
+            document.getElementById('login-password').value = '';
+            toggleAuth('login');
+        }
+
+        function initDashboard() {
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('dashboard-section').style.display = 'block';
+            
+            const nav = document.getElementById('top-nav');
+            nav.innerHTML = '';
+
+            if(currentUser.role === 'viewer') {
+                renderBracket();
+                loadViewerStats();
+                switchScreen('viewer-view');
+            }
+            else if(currentUser.role === 'player') {
+                nav.innerHTML = `<button onclick="switchScreen('player-view')">بروفايلي 🏃‍♂️</button> <button onclick="switchScreen('viewer-view'); renderBracket(); loadViewerStats();">شاشة العرض للجمهور 📊</button>`;
+                document.getElementById('p-name').textContent = currentUser.name;
+                document.getElementById('p-team').textContent = currentUser.team;
+                document.getElementById('p-goals').textContent = currentUser.goals || 0;
+                document.getElementById('p-assists').textContent = currentUser.assists || 0;
+                document.getElementById('p-avatar-img').src = currentUser.avatar || 'https://via.placeholder.com/100';
+                switchScreen('player-view');
+            } 
+            else if(currentUser.role === 'coach') {
+                nav.innerHTML = `<button onclick="switchScreen('coach-view')">فريقي 👔</button> <button onclick="switchScreen('viewer-view'); renderBracket(); loadViewerStats();">شاشة العرض للجمهور 📊</button>`;
+                document.getElementById('c-team-title').textContent = `المدير الفني لفريق: ${currentUser.team}`;
+                document.getElementById('c-avatar-img').src = currentUser.avatar || 'https://via.placeholder.com/100';
+                loadCoachPlayers();
+                switchScreen('coach-view');
+            } 
+            else if(currentUser.role === 'admin') {
+                nav.innerHTML = `<button onclick="switchScreen('admin-view')">الإدارة الفنية 💼</button> <button onclick="switchScreen('viewer-view'); renderBracket(); loadViewerStats();">شاشة العرض للجمهور 📊</button>`;
+                loadAdminData();
+                fillAdminBracketInputs();
+                switchScreen('admin-view');
+            }
+        }
+
+        // ================= وظائف المخطط والبراكيت =================
+        function renderBracket() {
+            const container = document.getElementById('viewer-bracket');
+            container.innerHTML = `
+                <div class="bracket-column">
+                    <div class="match-box">
+                        <div class="match-title">نصف النهائي 1 (مجموع الذهاب والإياب)</div>
+                        <div class="match-team"><span>${bracketData.m1.t1}</span><strong>${bracketData.m1.r1}</strong></div>
+                        <div class="match-team"><span>${bracketData.m1.t2}</span><strong>${bracketData.m1.r2}</strong></div>
+                    </div>
+                    <div class="match-box">
+                        <div class="match-title">نصف النهائي 2 (مجموع الذهاب والإياب)</div>
+                        <div class="match-team"><span>${bracketData.m2.t1}</span><strong>${bracketData.m2.r1}</strong></div>
+                        <div class="match-team"><span>${bracketData.m2.t2}</span><strong>${bracketData.m2.r2}</strong></div>
+                    </div>
+                </div>
+                <div class="bracket-column">
+                    <div class="match-box" style="border-color: var(--gold); border-width: 3px;">
+                        <div class="match-title" style="color:var(--gold);">النهائي الكبير 👑</div>
+                        <div class="match-team"><span>${bracketData.m3.t1}</span><strong>${bracketData.m3.r1}</strong></div>
+                        <div class="match-team"><span>${bracketData.m3.t2}</span><strong>${bracketData.m3.r2}</strong></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function fillAdminBracketInputs() {
+            ['m1', 'm2', 'm3'].forEach(m => {
+                document.getElementById(`b-${m}-t1`).value = bracketData[m].t1;
+                document.getElementById(`b-${m}-t2`).value = bracketData[m].t2;
+                
+                document.getElementById(`b-${m}-t1-l1`).value = bracketData[m].t1_l1;
+                document.getElementById(`b-${m}-t2-l1`).value = bracketData[m].t2_l1;
+                
+                document.getElementById(`b-${m}-t1-l2`).value = bracketData[m].t1_l2;
+                document.getElementById(`b-${m}-t2-l2`).value = bracketData[m].t2_l2;
+                
+                calcAdminMatch(m); // لحساب المجاميع وقت الفتح
+            });
+        }
+
+        function calcAdminMatch(m) {
+            let t1_l1 = parseInt(document.getElementById(`b-${m}-t1-l1`).value) || 0;
+            let t2_l1 = parseInt(document.getElementById(`b-${m}-t2-l1`).value) || 0;
+            let t1_l2 = parseInt(document.getElementById(`b-${m}-t1-l2`).value) || 0;
+            let t2_l2 = parseInt(document.getElementById(`b-${m}-t2-l2`).value) || 0;
+
+            let total1 = t1_l1 + t1_l2;
+            let total2 = t2_l1 + t2_l2;
+
+            document.getElementById(`b-${m}-total`).innerText = `النتيجة الإجمالية: (${total1}) - (${total2})`;
+        }
+
+        function saveBracketData() {
+            ['m1', 'm2', 'm3'].forEach(m => {
+                let t1_l1 = parseInt(document.getElementById(`b-${m}-t1-l1`).value) || 0;
+                let t2_l1 = parseInt(document.getElementById(`b-${m}-t2-l1`).value) || 0;
+                let t1_l2 = parseInt(document.getElementById(`b-${m}-t1-l2`).value) || 0;
+                let t2_l2 = parseInt(document.getElementById(`b-${m}-t2-l2`).value) || 0;
+
+                bracketData[m].t1 = document.getElementById(`b-${m}-t1`).value || `فريق`;
+                bracketData[m].t2 = document.getElementById(`b-${m}-t2`).value || `فريق`;
+                
+                bracketData[m].t1_l1 = document.getElementById(`b-${m}-t1-l1`).value;
+                bracketData[m].t2_l1 = document.getElementById(`b-${m}-t2-l1`).value;
+                bracketData[m].t1_l2 = document.getElementById(`b-${m}-t1-l2`).value;
+                bracketData[m].t2_l2 = document.getElementById(`b-${m}-t2-l2`).value;
+
+                bracketData[m].r1 = t1_l1 + t1_l2;
+                bracketData[m].r2 = t2_l1 + t2_l2;
+            });
+
+            localStorage.setItem('pl_bracket', JSON.stringify(bracketData));
+            alert('تم حساب مجموع الذهاب والعودة وتحديث مخطط البطولة بنجاح ✅');
+        }
+
+        // ================= تصفح الفرق للجمهور =================
+        function showTeamDetails(teamName) {
+            const card = document.getElementById('team-details-card');
+            const coachTitle = document.getElementById('td-coach-name');
+            const tbody = document.getElementById('team-players-body');
+            
+            if(!teamName) { card.style.display = 'none'; return; }
+            card.style.display = 'block';
+            tbody.innerHTML = '';
+
+            const coach = users.find(u => u.role === 'coach' && u.team === teamName);
+            coachTitle.textContent = coach ? `👔 المدرب الفني: ${coach.name}` : `👔 المدرب الفني: لم يسجل بعد`;
+
+            const teamPlayers = users.filter(u => u.role === 'player' && u.team === teamName);
+            if(teamPlayers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">لا يوجد لاعبين مسجلين في هذا الفريق حالياً</td></tr>';
+                return;
+            }
+
+            teamPlayers.forEach(p => {
+                let imgHtml = `<img src="${p.avatar || 'https://via.placeholder.com/40'}" class="td-avatar">`;
+                tbody.innerHTML += `<tr>
+                    <td>${imgHtml}</td>
+                    <td><strong>${p.name}</strong></td>
+                    <td style="color:var(--danger); font-weight:bold;">${p.goals}</td>
+                    <td style="color:var(--info); font-weight:bold;">${p.assists}</td>
+                </tr>`;
+            });
+        }
+
+        // ================= تحديث الصورة من البروفايل شخصياً =================
+        function handleProfileImageUpload(event, role) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const newUrl = e.target.result;
+                    const imgId = role === 'player' ? 'p-avatar-img' : 'c-avatar-img';
+                    
+                    let userIndex = users.findIndex(u => u.name === currentUser.name);
+                    if(userIndex > -1) {
+                        users[userIndex].avatar = newUrl;
+                        currentUser.avatar = newUrl;
+                        localStorage.setItem('pl_users', JSON.stringify(users));
+                        document.getElementById(imgId).src = newUrl;
+                        alert('تم التقاط الصورة وتحديث بروفايلك بنجاح 📸');
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // ================= الإحصائيات العامة والهدافين =================
+        function loadViewerStats() {
+            const tbody = document.getElementById('viewer-stats-body');
+            tbody.innerHTML = '';
+            
+            let players = users.filter(u => u.role === 'player');
+            players.sort((a, b) => (b.goals || 0) - (a.goals || 0));
+
+            players.forEach((p, index) => {
+                let badge = index === 0 && p.goals > 0 ? '👑' : '';
+                let imgHtml = `<img src="${p.avatar || 'https://via.placeholder.com/40'}" class="td-avatar">`;
+                tbody.innerHTML += `<tr>
+                    <td>${index + 1}</td>
+                    <td>${imgHtml}</td>
+                    <td><strong>${p.name} ${badge}</strong></td>
+                    <td>${p.team}</td>
+                    <td style="color:var(--danger); font-weight:bold; font-size:1.2em;">${p.goals}</td>
+                    <td style="color:var(--info); font-weight:bold; font-size:1.2em;">${p.assists}</td>
+                </tr>`;
+            });
+        }
+
+        function switchAdminTab(tab) {
+            document.getElementById('admin-stats-tab').style.display = tab === 'stats' ? 'block' : 'none';
+            document.getElementById('admin-bracket-tab').style.display = tab === 'bracket' ? 'block' : 'none';
+            document.getElementById('admin-players-tab').style.display = tab === 'players' ? 'block' : 'none';
+        }
+
+        function loadAdminData() {
+            const statsBody = document.getElementById('admin-stats-update');
+            statsBody.innerHTML = '';
+            let players = users.filter(u => u.role === 'player');
+            
+            players.forEach(p => {
+                statsBody.innerHTML += `<tr>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.team}</td>
+                    <td>
+                        <button class="stat-btn add" onclick="updateStat('${p.name}', 'goals', 1)">+</button>
+                        <span style="font-size:1.2em; font-weight:bold; margin:0 10px;">${p.goals}</span>
+                        <button class="stat-btn sub" onclick="updateStat('${p.name}', 'goals', -1)">-</button>
+                    </td>
+                    <td>
+                        <button class="stat-btn add" onclick="updateStat('${p.name}', 'assists', 1)">+</button>
+                        <span style="font-size:1.2em; font-weight:bold; margin:0 10px;">${p.assists}</span>
+                        <button class="stat-btn sub" onclick="updateStat('${p.name}', 'assists', -1)">-</button>
+                    </td>
+                </tr>`;
+            });
+
+            const tbody = document.getElementById('admin-all-users');
+            tbody.innerHTML = '';
+            users.forEach(u => {
+                const roleIcon = u.role === 'coach' ? '👔 مدرب' : '🏃‍♂️ لاعب';
+                tbody.innerHTML += `<tr><td>${roleIcon}</td><td>${u.name}</td><td>${u.team}</td><td>${u.pass}</td></tr>`;
+            });
+        }
+
+        function updateStat(playerName, statType, amount) {
+            let userIndex = users.findIndex(u => u.name === playerName);
+            if(userIndex > -1) {
+                let currentVal = users[userIndex][statType] || 0;
+                let newVal = currentVal + amount;
+                if(newVal < 0) newVal = 0;
+                
+                users[userIndex][statType] = newVal;
+                localStorage.setItem('pl_users', JSON.stringify(users));
+                loadAdminData();
+            }
+        }
+
+        function loadCoachPlayers() {
+            const tbody = document.getElementById('coach-players-list');
+            tbody.innerHTML = '';
+            const myPlayers = users.filter(u => u.role === 'player' && u.team === currentUser.team);
+            
+            if(myPlayers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5">لا يوجد لاعبين مسجلين في فريقك بعد</td></tr>';
+                return;
+            }
+
+            myPlayers.forEach(p => {
+                let imgHtml = `<img src="${p.avatar || 'https://via.placeholder.com/40'}" class="td-avatar">`;
+                tbody.innerHTML += `<tr>
+                    <td>${imgHtml}</td>
+                    <td><strong>${p.name}</strong></td>
+                    <td style="color:var(--danger); font-weight:bold;">${p.goals}</td>
+                    <td style="color:var(--info); font-weight:bold;">${p.assists}</td>
+                    <td><button class="btn-danger" onclick="alert('لتقديم طلب استبعاد تواصل مع اللجنة المنظمة (ناجح حمادي).')">طرد من الفريق</button></td>
+                </tr>`;
+            });
+        }
+
+        function clearDB() {
+            if(confirm("هل أنت متأكد يا ناجح؟ سيتم مسح كل البيانات!")) {
+                localStorage.removeItem('pl_users');
+                localStorage.removeItem('pl_bracket');
+                users = [];
+                loadAdminData();
+            }
+        }
+    </script>
+</body>
+</html>
